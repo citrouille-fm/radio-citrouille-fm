@@ -3,7 +3,14 @@
 <head>
 <meta charset='UTF-8'>
 <title>Citrouille FM 🎃</title>
+
 <style>
+/* 🌍 BASE RESPONSIVE TYPOGRAPHY */
+html{
+    font-size: clamp(8px, 1.2vw, 16px);
+}
+
+/* 🎃 GLOBAL STYLE */
 body{
     margin:0;
     font-family:Arial, sans-serif;
@@ -14,17 +21,29 @@ body{
 .container{display:flex;height:100vh;}
 
 .left{
-    width:25%;padding:20px;background:rgba(0,0,0,0.6);
-    display:flex;flex-direction:column;
+    width:25%;
+    padding:20px;
+    background:rgba(0,0,0,0.6);
+    display:flex;
+    flex-direction:column;
 }
 
-.left h2{font-size:40px;color:#ff9933;margin-bottom:20px;}
+/* 👻 TITRE LEFT ADAPTATIF (6pt style smartphone) */
+.left h2{
+    font-size:clamp(8px, 1vw, 18px);
+    color:#ff9933;
+    margin-bottom:20px;
+}
 
 .nav a{
-    display:block;padding:12px;margin:6px 0;
-    text-decoration:none;color:white;
+    display:block;
+    padding:12px;
+    margin:6px 0;
+    text-decoration:none;
+    color:white;
     background:rgba(255,255,255,0.05);
-    border-radius:8px;cursor:pointer;
+    border-radius:8px;
+    cursor:pointer;
 }
 
 .nav a:hover{background:rgba(255,102,0,0.5);}
@@ -37,8 +56,12 @@ body{
 .box{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin:6px 0;}
 
 button,input,textarea{
-    padding:10px;margin:5px 0;border:none;border-radius:6px;
+    padding:10px;
+    margin:5px 0;
+    border:none;
+    border-radius:6px;
 }
+
 button{background:#ff6600;color:white;cursor:pointer;}
 
 #adminControls{
@@ -51,16 +74,19 @@ button{background:#ff6600;color:white;cursor:pointer;}
     z-index:999;
 }
 
-#adminControls button{
-    width:170px;
-}
+#adminControls button{width:170px;}
 
 table{
-    width:100%;border-collapse:collapse;background:rgba(0,0,0,0.5);
+    width:100%;
+    border-collapse:collapse;
+    background:rgba(0,0,0,0.5);
 }
+
 th,td{
-    padding:10px;border:1px solid rgba(255,255,255,0.15);
+    padding:10px;
+    border:1px solid rgba(255,255,255,0.15);
 }
+
 th{background:#ff6600;}
 
 [contenteditable='true']{
@@ -71,12 +97,15 @@ th{background:#ff6600;}
 
 </style>
 </head>
+
 <body>
 
 <div class='container'>
 
+<!-- LEFT MENU -->
 <div class='left'>
-    <h2>31/10 🎃</h2>
+    <h2>bienvenu</h2>
+
     <div class='nav'>
         <a onclick="show('prog')">👻 Programmes</a>
         <a onclick="show('live')">🔴 En direct</a>
@@ -88,6 +117,7 @@ th{background:#ff6600;}
     </div>
 </div>
 
+<!-- RIGHT CONTENT -->
 <div class='right'>
 
 <h1>Citrouille FM 👻🎶</h1>
@@ -120,7 +150,7 @@ th{background:#ff6600;}
     <h2>🔴 En direct</h2>
     <input id='liveUrl' placeholder='URL flux audio / Drive' disabled>
     <button class='adminOnly' onclick='setLive()'>Lancer</button>
-  </div>
+</div>
 
 <div id='listen' class='section'>
     <h2>📻 Écouter</h2>
@@ -131,7 +161,7 @@ th{background:#ff6600;}
 
 <div id='contact' class='section'>
     <h2>📞 Participer</h2>
-    <div id='contactBox' class='box'>
+    <div class='box'>
         📧 radio.frninsomnie.halloween@gmail.com<br>
         📱 06.36.45.45.69
     </div>
@@ -150,7 +180,7 @@ th{background:#ff6600;}
 
 <div id='about' class='section'>
     <h2>💀 À propos</h2>
-    <div id='aboutBox' class='box'>
+    <div class='box'>
         Citrouille FM est une radio nocturne entre analogique et futur digital.
     </div>
 </div>
@@ -164,60 +194,24 @@ th{background:#ff6600;}
 </div>
 </div>
 
+<!-- ADMIN PANEL -->
 <div id='adminControls'>
-    <button onclick='saveAll()'>💾 Enregistrer</button>
+    <button onclick='saveState()'>💾 Enregistrer</button>
     <button onclick='logout()'>🚪 Déconnexion</button>
 </div>
 
 <script>
 const STORAGE_KEY = "citrouille_fm_data";
 
-/* 🔥 SAUVEGARDE TOTALE */
-function saveState(){
-    const data = {
-        prog: document.getElementById('progTable').innerHTML,
-        about: document.getElementById('aboutBox').innerHTML,
-        events: document.getElementById('eventList').innerHTML,
-        podcasts: document.getElementById('podcastList').innerHTML,
-        live: document.getElementById('liveStatus').innerText,
-        contact: document.getElementById('contactBox').innerHTML
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-/* 🔥 CHARGEMENT TOTAL */
-function loadState(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-
-    const data = JSON.parse(raw);
-
-    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
-    if(data.about) document.getElementById('aboutBox').innerHTML = data.about;
-    if(data.events) document.getElementById('eventList').innerHTML = data.events;
-    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
-    if(data.live) document.getElementById('liveStatus').innerText = data.live;
-    if(data.contact) document.getElementById('contactBox').innerHTML = data.contact;
-}
-
-/* 🔥 AUTO SAVE (empêche perte de données) */
-document.addEventListener("input", function(e){
-    if(!admin) return;
-    saveState();
-});
-
-/* 🔥 AUTO CHARGEMENT AU DÉMARRAGE */
-document.addEventListener("DOMContentLoaded", function(){
-    loadState();
-});
-
 let admin=false;
 
+/* NAV */
 function show(id){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
+/* LOGIN */
 function login(){
     if(document.getElementById('pwd').value==='@HALLOWEEN17'){
         admin=true;
@@ -228,14 +222,12 @@ function login(){
 
 function applyAdmin(state){
     admin=state;
-
     document.getElementById('adminControls').style.display=state?'flex':'none';
 
     document.querySelectorAll('.adminOnly').forEach(b=>{
         b.style.display=state?'inline-block':'none';
     });
 
-    // GLOBAL EDIT MODE (ALL TEXT IN SECTIONS)
     document.querySelectorAll('.section').forEach(sec=>{
         sec.querySelectorAll('*').forEach(el=>{
             if(['INPUT','BUTTON','AUDIO','SCRIPT','STYLE','TEXTAREA'].includes(el.tagName)) return;
@@ -249,6 +241,7 @@ function logout(){
     applyAdmin(false);
 }
 
+/* TABLE EDIT */
 function addRow(){
     let t=document.getElementById('progTable');
     let r=t.insertRow();
@@ -279,6 +272,7 @@ function deleteColumn(){
     }
 }
 
+/* PODCAST */
 function addPodcast(){
     let v=document.getElementById('podcastInput').value;
     if(!v) return;
@@ -287,6 +281,7 @@ function addPodcast(){
     document.getElementById('podcastList').appendChild(li);
 }
 
+/* EVENTS */
 function addEvent(){
     let txt=document.getElementById('eventInput').value;
     let img=document.getElementById('eventImg').value;
@@ -300,10 +295,34 @@ function addEvent(){
     document.getElementById('noEvents').style.display='none';
 }
 
-function setLive(){
-    document.getElementById('livePlayer').src=document.getElementById('liveUrl').value;
+/* SAVE */
+function saveState(){
+    const data = {
+        prog: document.getElementById('progTable').innerHTML,
+        about: document.querySelector('#about .box').innerHTML,
+        events: document.getElementById('eventList').innerHTML,
+        podcasts: document.getElementById('podcastList').innerHTML,
+        contact: document.querySelector('#contact .box').innerHTML
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
-</script>
 
+/* LOAD */
+function loadState(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+
+    const data = JSON.parse(raw);
+
+    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
+    if(data.about) document.querySelector('#about .box').innerHTML = data.about;
+    if(data.events) document.getElementById('eventList').innerHTML = data.events;
+    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
+    if(data.contact) document.querySelector('#contact .box').innerHTML = data.contact;
+}
+
+document.addEventListener("DOMContentLoaded", loadState);
+
+</script>
 </body>
 </html>

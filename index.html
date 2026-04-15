@@ -5,63 +5,38 @@
 <title>Citrouille FM 🎃</title>
 
 <style>
-/* 🌍 BASE RESPONSIVE TYPOGRAPHY */
-html{
-    font-size: clamp(8px, 1.2vw, 16px);
-}
-
-/* 🎃 GLOBAL STYLE */
 body{
     margin:0;
     font-family:Arial, sans-serif;
     background:linear-gradient(135deg,#1a001a,#330033,#ff6600);
     color:white;
+    font-size:16px;
 }
+
+@media (max-width:900px){ body{font-size:14px;} }
+@media (max-width:600px){ body{font-size:12px;} }
 
 .container{display:flex;height:100vh;}
-
-.left{
-    width:25%;
-    padding:20px;
-    background:rgba(0,0,0,0.6);
-    display:flex;
-    flex-direction:column;
-}
-
-/* 👻 TITRE LEFT ADAPTATIF (6pt style smartphone) */
-.left h2{
-    font-size:clamp(8px, 1vw, 18px);
-    color:#ff9933;
-    margin-bottom:20px;
-}
+.left{width:25%;padding:20px;background:rgba(0,0,0,0.6);display:flex;flex-direction:column;}
+.left h2{font-size:40px;color:#ff9933;margin-bottom:20px;}
 
 .nav a{
-    display:block;
-    padding:12px;
-    margin:6px 0;
-    text-decoration:none;
-    color:white;
+    display:block;padding:12px;margin:6px 0;
+    text-decoration:none;color:white;
     background:rgba(255,255,255,0.05);
-    border-radius:8px;
-    cursor:pointer;
+    border-radius:8px;cursor:pointer;
 }
-
 .nav a:hover{background:rgba(255,102,0,0.5);}
 
 .right{width:75%;padding:30px;overflow:auto;}
-
 .section{display:none;}
 .active{display:block;}
 
 .box{background:rgba(0,0,0,0.3);padding:10px;border-radius:8px;margin:6px 0;}
 
 button,input,textarea{
-    padding:10px;
-    margin:5px 0;
-    border:none;
-    border-radius:6px;
+    padding:10px;margin:5px 0;border:none;border-radius:6px;
 }
-
 button{background:#ff6600;color:white;cursor:pointer;}
 
 #adminControls{
@@ -87,14 +62,9 @@ th,td{
     border:1px solid rgba(255,255,255,0.15);
 }
 
+td,th{user-select:none;}
 th{background:#ff6600;}
-
-[contenteditable='true']{
-    outline:2px dashed rgba(255,102,0,0.6);
-}
-
 .adminOnly{display:none;}
-
 </style>
 </head>
 
@@ -102,22 +72,19 @@ th{background:#ff6600;}
 
 <div class='container'>
 
-<!-- LEFT MENU -->
 <div class='left'>
-    <h2>bienvenu</h2>
-
+    <h2>🎃</h2>
     <div class='nav'>
-        <a onclick="show('prog')">👻 Programmes</a>
-        <a onclick="show('live')">🔴 En direct</a>
-        <a onclick="show('listen')">📻 Écouter</a>
-        <a onclick="show('contact')">📞 Participer</a>
-        <a onclick="show('events')">🎃 Événements</a>
-        <a onclick="show('about')">💀 À propos</a>
-        <a onclick="show('admin')">⚙️ Admin</a>
+        <a onclick="show('prog')">Programmes</a>
+        <a onclick="show('live')">En direct</a>
+        <a onclick="show('listen')">Écouter</a>
+        <a onclick="show('contact')">Participer</a>
+        <a onclick="show('events')">Événements</a>
+        <a onclick="show('about')">À propos</a>
+        <a onclick="show('admin')">Admin</a>
     </div>
 </div>
 
-<!-- RIGHT CONTENT -->
 <div class='right'>
 
 <h1>Citrouille FM 👻🎶</h1>
@@ -131,25 +98,19 @@ th{background:#ff6600;}
     <button class='adminOnly' onclick='deleteColumn()'>➖ Colonne</button>
 
     <table id='progTable'>
-        <tr>
-            <th>Horaire</th>
-            <th>Programme</th>
-        </tr>
-        <tr>
-            <td>00:00 - 16:30</td>
-            <td>Musiques d'ambiance 🎶</td>
-        </tr>
-        <tr>
-            <td>16:30 - 17:30</td>
-            <td>Histoires d’horreur 👻</td>
-        </tr>
+        <tr><th>Horaire</th><th>Programme</th></tr>
+        <tr><td>00:00 - 16:30</td><td>Musiques d'ambiance 🎶</td></tr>
+        <tr><td>16:30 - 17:30</td><td>Histoires d’horreur 👻</td></tr>
     </table>
 </div>
 
 <div id='live' class='section'>
     <h2>🔴 En direct</h2>
     <input id='liveUrl' placeholder='URL flux audio / Drive' disabled>
-    <button class='adminOnly' onclick='setLive()'>Lancer</button>
+    <button class='adminOnly' onclick='setLive()'>Appliquer</button>
+
+    <!-- FIX : lecteur ajouté -->
+    <audio id="livePlayer" controls style="width:100%;margin-top:10px;"></audio>
 </div>
 
 <div id='listen' class='section'>
@@ -161,7 +122,7 @@ th{background:#ff6600;}
 
 <div id='contact' class='section'>
     <h2>📞 Participer</h2>
-    <div class='box'>
+    <div id='contactBox' class='box'>
         📧 radio.frninsomnie.halloween@gmail.com<br>
         📱 06.36.45.45.69
     </div>
@@ -180,7 +141,7 @@ th{background:#ff6600;}
 
 <div id='about' class='section'>
     <h2>💀 À propos</h2>
-    <div class='box'>
+    <div id='aboutBox' class='box'>
         Citrouille FM est une radio nocturne entre analogique et futur digital.
     </div>
 </div>
@@ -194,7 +155,6 @@ th{background:#ff6600;}
 </div>
 </div>
 
-<!-- ADMIN PANEL -->
 <div id='adminControls'>
     <button onclick='saveState()'>💾 Enregistrer</button>
     <button onclick='logout()'>🚪 Déconnexion</button>
@@ -202,16 +162,40 @@ th{background:#ff6600;}
 
 <script>
 const STORAGE_KEY = "citrouille_fm_data";
-
 let admin=false;
 
-/* NAV */
+function saveState(){
+    const data = {
+        prog: document.getElementById('progTable').innerHTML,
+        about: document.getElementById('aboutBox').innerHTML,
+        events: document.getElementById('eventList').innerHTML,
+        podcasts: document.getElementById('podcastList').innerHTML,
+        contact: document.getElementById('contactBox').innerHTML,
+        live: document.getElementById('liveUrl').value
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function loadState(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+
+    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
+    if(data.about) document.getElementById('aboutBox').innerHTML = data.about;
+    if(data.events) document.getElementById('eventList').innerHTML = data.events;
+    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
+    if(data.contact) document.getElementById('contactBox').innerHTML = data.contact;
+    if(data.live) document.getElementById('liveUrl').value = data.live;
+}
+
+document.addEventListener("DOMContentLoaded", loadState);
+
 function show(id){
     document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
 
-/* LOGIN */
 function login(){
     if(document.getElementById('pwd').value==='@HALLOWEEN17'){
         admin=true;
@@ -220,19 +204,23 @@ function login(){
     } else alert('Erreur 💀');
 }
 
+/* FIX IMPORTANT */
 function applyAdmin(state){
     admin=state;
-    document.getElementById('adminControls').style.display=state?'flex':'none';
 
+    document.getElementById('adminControls').style.display=state?'flex':'none';
     document.querySelectorAll('.adminOnly').forEach(b=>{
         b.style.display=state?'inline-block':'none';
     });
 
-    document.querySelectorAll('.section').forEach(sec=>{
-        sec.querySelectorAll('*').forEach(el=>{
-            if(['INPUT','BUTTON','AUDIO','SCRIPT','STYLE','TEXTAREA'].includes(el.tagName)) return;
-            el.contentEditable = state;
-        });
+    document.querySelectorAll('td,th,div,li,p').forEach(el=>{
+        el.contentEditable = state;
+    });
+
+    /* 🔥 FIX : débloque les inputs */
+    ['liveUrl','podcastInput','eventInput','eventImg'].forEach(id=>{
+        let el=document.getElementById(id);
+        if(el) el.disabled = !state;
     });
 }
 
@@ -241,11 +229,23 @@ function logout(){
     applyAdmin(false);
 }
 
-/* TABLE EDIT */
+function setLive(){
+    document.getElementById('livePlayer').src =
+    document.getElementById('liveUrl').value;
+}
+
+function addPodcast(){
+    let v=document.getElementById('podcastInput').value;
+    if(!v) return;
+    let li=document.createElement('li');
+    li.textContent='🎧 '+v;
+    document.getElementById('podcastList').appendChild(li);
+}
+
 function addRow(){
     let t=document.getElementById('progTable');
     let r=t.insertRow();
-    r.innerHTML="<td contenteditable='true'>Horaire</td><td contenteditable='true'>Programme</td>";
+    r.innerHTML="<td>Horaire</td><td>Programme</td>";
 }
 
 function deleteRow(){
@@ -256,8 +256,7 @@ function deleteRow(){
 function addColumn(){
     let table=document.getElementById('progTable');
     for(let i=0;i<table.rows.length;i++){
-        let cell=i===0?document.createElement('th'):document.createElement('td');
-        cell.contentEditable=true;
+        let cell=document.createElement(i===0?'th':'td');
         cell.innerText=i===0?'Nouvelle colonne':'Contenu';
         table.rows[i].appendChild(cell);
     }
@@ -272,16 +271,6 @@ function deleteColumn(){
     }
 }
 
-/* PODCAST */
-function addPodcast(){
-    let v=document.getElementById('podcastInput').value;
-    if(!v) return;
-    let li=document.createElement('li');
-    li.textContent='🎧 '+v;
-    document.getElementById('podcastList').appendChild(li);
-}
-
-/* EVENTS */
 function addEvent(){
     let txt=document.getElementById('eventInput').value;
     let img=document.getElementById('eventImg').value;
@@ -290,39 +279,10 @@ function addEvent(){
     let div=document.createElement('div');
     div.className='box';
     div.innerHTML='🎃 '+txt+(img?'<br><img src="'+img+'" style="max-width:100%">':'');
-
     document.getElementById('eventList').appendChild(div);
     document.getElementById('noEvents').style.display='none';
 }
-
-/* SAVE */
-function saveState(){
-    const data = {
-        prog: document.getElementById('progTable').innerHTML,
-        about: document.querySelector('#about .box').innerHTML,
-        events: document.getElementById('eventList').innerHTML,
-        podcasts: document.getElementById('podcastList').innerHTML,
-        contact: document.querySelector('#contact .box').innerHTML
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-/* LOAD */
-function loadState(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-
-    const data = JSON.parse(raw);
-
-    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
-    if(data.about) document.querySelector('#about .box').innerHTML = data.about;
-    if(data.events) document.getElementById('eventList').innerHTML = data.events;
-    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
-    if(data.contact) document.querySelector('#contact .box').innerHTML = data.contact;
-}
-
-document.addEventListener("DOMContentLoaded", loadState);
-
 </script>
+
 </body>
 </html>

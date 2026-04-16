@@ -164,7 +164,19 @@ th{background:#ff6600;}
 const STORAGE_KEY = "citrouille_fm_data";
 let admin=false;
 
-function saveState(){
+async function loadState(){
+    const res = await fetch("/load");
+    const data = await res.json();
+
+    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
+    if(data.about) document.getElementById('aboutBox').innerHTML = data.about;
+    if(data.events) document.getElementById('eventList').innerHTML = data.events;
+    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
+    if(data.contact) document.getElementById('contactBox').innerHTML = data.contact;
+    if(data.live) document.getElementById('liveUrl').value = data.live;
+}
+
+async function saveState(){
     const data = {
         prog: document.getElementById('progTable').innerHTML,
         about: document.getElementById('aboutBox').innerHTML,
@@ -173,20 +185,12 @@ function saveState(){
         contact: document.getElementById('contactBox').innerHTML,
         live: document.getElementById('liveUrl').value
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
 
-function loadState(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const data = JSON.parse(raw);
-
-    if(data.prog) document.getElementById('progTable').innerHTML = data.prog;
-    if(data.about) document.getElementById('aboutBox').innerHTML = data.about;
-    if(data.events) document.getElementById('eventList').innerHTML = data.events;
-    if(data.podcasts) document.getElementById('podcastList').innerHTML = data.podcasts;
-    if(data.contact) document.getElementById('contactBox').innerHTML = data.contact;
-    if(data.live) document.getElementById('liveUrl').value = data.live;
+    await fetch("/save", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
 }
 
 document.addEventListener("DOMContentLoaded", loadState);
